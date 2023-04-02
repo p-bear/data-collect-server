@@ -1,0 +1,13 @@
+package com.pbear.datacollectserver;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+@SpringBootTest
+class DataCollectServerApplicationTests {
+
+  @Test
+  void contextLoads() {
+  }
+
+}
