@@ -1,9 +1,9 @@
 package com.pbear.datacollectserver.service.blizzard;
 
 import com.google.gson.Gson;
+import com.pbear.datacollectserver.data.blizzard.call.response.AccessTokenRes;
 import com.pbear.datacollectserver.data.exception.BlizzardTokenException;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -26,10 +26,11 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class BlizzardAuthService {
   private final HttpClient httpClient;
 
-  private final Map<String, AccessToken> accessTokenCacheMap = new ConcurrentHashMap<>();
+  private final Map<String, AccessTokenRes> accessTokenCacheMap = new ConcurrentHashMap<>();
   private final Gson gson = new Gson();
 
   @Value("${blizzard.auth.uri}")
@@ -38,10 +39,6 @@ public class BlizzardAuthService {
   private String BLIZZARD_AUTH_CLIENT_ID;
   @Value("${blizzard.auth.clientSecret}")
   private String BLIZZARD_AUTH_CLIENT_SECRET;
-
-  public BlizzardAuthService(final HttpClient httpClient) {
-    this.httpClient = httpClient;
-  }
 
   @PostConstruct
   public void init() {
@@ -61,12 +58,12 @@ public class BlizzardAuthService {
     return this.accessTokenCacheMap.get("accessToken").getAccessToken();
   }
 
-  private AccessToken convertToAccessToken(final Map<String, Object> tokenResponse) {
-    return new AccessToken(
+  private AccessTokenRes convertToAccessToken(final Map<String, Object> tokenResponse) {
+    return new AccessTokenRes(
         String.valueOf(tokenResponse.get("access_token")),
         String.valueOf(tokenResponse.get("token_type")),
         LocalDateTime.now(ZoneId.systemDefault()),
-        AccessToken.calcExpiredDate(((Double) tokenResponse.get("expires_in")).longValue()),
+        this.calcExpiredDate(((Double) tokenResponse.get("expires_in")).longValue()),
         String.valueOf(tokenResponse.get("sub")));
   }
 
@@ -77,7 +74,7 @@ public class BlizzardAuthService {
   @SuppressWarnings("unchecked")
   private Map<String, Object> postClientCredentialAccessToken() throws URISyntaxException, IOException, InterruptedException {
     HttpRequest request = HttpRequest.newBuilder()
-        .uri(new URI(BLIZZARD_AUTH_URI))
+        .uri(new URI(BLIZZARD_AUTH_URI + "/token"))
         .header("Authorization", this.getBasicAuthHeaderValue(BLIZZARD_AUTH_CLIENT_ID, BLIZZARD_AUTH_CLIENT_SECRET))
         .header("Content-Type", "application/x-www-form-urlencoded")
         .POST(HttpRequest.BodyPublishers.ofString(
@@ -94,18 +91,8 @@ public class BlizzardAuthService {
     return "Basic " + Base64.getEncoder().encodeToString((clientId + ":" + clientSecret).getBytes());
   }
 
-  @AllArgsConstructor
-  @Getter
-  static class AccessToken {
-    private String accessToken;
-    private String tokenType;
-    private LocalDateTime issueDate;
-    private LocalDateTime expiredDate;
-    private String sub;
-
-    static LocalDateTime calcExpiredDate(final long expiredIn) {
-      return LocalDateTime.now(ZoneId.systemDefault())
-          .plusSeconds(expiredIn);
-    }
+  public LocalDateTime calcExpiredDate(final long expiredIn) {
+    return LocalDateTime.now(ZoneId.systemDefault())
+        .plusSeconds(expiredIn);
   }
 }
