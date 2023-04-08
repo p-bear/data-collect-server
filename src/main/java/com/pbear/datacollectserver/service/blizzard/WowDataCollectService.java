@@ -37,7 +37,7 @@ public class WowDataCollectService {
       throw new RuntimeException(e);
     }
 
-    this.kafkaEventProduceService.sendSimpleMessage("test.message", EventMessage.builder()
+    this.kafkaEventProduceService.sendSimpleMessage("collect.wow.auction", EventMessage.builder()
         .data(getAuctionsRes)
         .build());
   }
