@@ -4,6 +4,12 @@ spring:
       bootstrap-servers: 192.168.0.103:9092
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        max:
+          request:
+            size: 5008588
+        compression:
+          type: snappy
 
 server:
   name: data-collect-server
