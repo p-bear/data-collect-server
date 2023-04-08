@@ -6,7 +6,7 @@
     </springProfile>
 
     <springProfile name="release">
-        <property name="FILE_PATH" value="/mnt/datadisk/data"/>
+        <property name="FILE_PATH" value="/logs"/>
         <property name="FILE_NAME" value="data-collect-server"/>
     </springProfile>
 
