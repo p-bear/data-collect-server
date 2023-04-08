@@ -1,6 +1,4 @@
 spring:
-  profiles:
-    active: local
   kafka:
     producer:
       bootstrap-servers: 192.168.0.103:9092
@@ -9,3 +7,9 @@ spring:
 
 server:
   name: data-collect-server
+
+blizzard:
+  auth:
+    uri: https://oauth.battle.net
+  api:
+    uri: https://kr.api.blizzard.com
