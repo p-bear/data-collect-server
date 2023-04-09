@@ -9,6 +9,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.Date;
+import java.util.Objects;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -37,8 +40,16 @@ public class WowDataCollectService {
       throw new RuntimeException(e);
     }
 
-    this.kafkaEventProduceService.sendSimpleMessage("collect.wow.auction", EventMessage.builder()
-        .data(getAuctionsRes)
-        .build());
+    String eventId = UUID.randomUUID().toString();
+    Long issueTimestamp = new Date().getTime();
+    getAuctionsRes.getAuctions().stream()
+        .filter(Objects::nonNull)
+        .map(auctionData -> EventMessage.builder()
+            .id(eventId)
+            .timestamp(issueTimestamp)
+            .version(1L)
+            .data(auctionData)
+            .build())
+        .forEach(eventMessage -> this.kafkaEventProduceService.sendSimpleMessage("test.message", eventMessage));
   }
 }
