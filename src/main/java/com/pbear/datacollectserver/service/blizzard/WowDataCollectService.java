@@ -17,6 +17,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Slf4j
 public class WowDataCollectService {
+  private final String TOPIC_COLLECT_WOW_AUCTION = "collect.wow.auction";
+
   private final BlizzardApiService blizzardApiService;
   private final KafkaEventProduceService kafkaEventProduceService;
 
@@ -50,6 +52,6 @@ public class WowDataCollectService {
             .version(1L)
             .data(auctionData)
             .build())
-        .forEach(eventMessage -> this.kafkaEventProduceService.sendSimpleMessage("test.message", eventMessage));
+        .forEach(eventMessage -> this.kafkaEventProduceService.sendSimpleMessage(TOPIC_COLLECT_WOW_AUCTION, eventMessage));
   }
 }

@@ -25,7 +25,7 @@
         </encoder>
 
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${FILE_PATH}/${FILE_NAME}.%d{yyyy-MM-dd}_%i.log.gz</fileNamePattern>
+            <fileNamePattern>${FILE_PATH}/${FILE_NAME}.log.%d{yyyy-MM-dd}_%i.gz</fileNamePattern>
             <maxHistory>30</maxHistory>
         </rollingPolicy>
     </appender>
