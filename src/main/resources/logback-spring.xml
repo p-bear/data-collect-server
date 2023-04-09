@@ -25,11 +25,8 @@
         </encoder>
 
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${FILE_PATH}/${FILE_NAME}.%d{yyyy-MM-dd}_%i.log</fileNamePattern>
-            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-                <maxFileSize>1GB</maxFileSize>
-            </timeBasedFileNamingAndTriggeringPolicy>
-            <maxHistory>15</maxHistory>
+            <fileNamePattern>${FILE_PATH}/${FILE_NAME}.%d{yyyy-MM-dd}_%i.log.gz</fileNamePattern>
+            <maxHistory>30</maxHistory>
         </rollingPolicy>
     </appender>
 
