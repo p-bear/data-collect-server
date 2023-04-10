@@ -23,21 +23,17 @@ public class KafkaEventProduceService {
 
   public <V> ListenableFuture<SendResult<String, EventMessage>> sendSimpleMessage(
       final String topic, final EventMessage<V> eventMessage) {
-    if (eventMessage.getId() == null) {
-      eventMessage.setId(UUID.randomUUID().toString());
+    if (eventMessage.getTransactionId() == null) {
+      eventMessage.setTransactionId(UUID.randomUUID().toString());
     }
     if (eventMessage.getIssuer() == null) {
       eventMessage.setIssuer(serverName);
-    }
-    if (eventMessage.getVersion() == null) {
-      eventMessage.setVersion(1L);
     }
     if (eventMessage.getTimestamp() == null) {
       eventMessage.setTimestamp(new Date().getTime());
     }
 
-    log.info("send message, topic: {}, message class: {}, message: {}",
-        topic, eventMessage.getData().getClass().getName(), eventMessage);
+    log.debug("send message, topic: {}, message class: {}, message: {}", topic, eventMessage.getData().getClass().getName(), eventMessage);
     return this.kafkaTemplate.send(topic, eventMessage);
   }
 }

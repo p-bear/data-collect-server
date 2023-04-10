@@ -1,5 +1,6 @@
 package com.pbear.datacollectserver.service.blizzard;
 
+import com.pbear.datacollectserver.data.blizzard.call.response.GetAuctionsCommoditiesRes;
 import com.pbear.datacollectserver.data.blizzard.call.response.GetAuctionsRes;
 import com.pbear.datacollectserver.data.blizzard.call.response.GetRealmRes;
 import com.pbear.datacollectserver.data.kafka.EventMessage;
@@ -18,6 +19,7 @@ import java.util.UUID;
 @Slf4j
 public class WowDataCollectService {
   private final String TOPIC_COLLECT_WOW_AUCTION = "collect.wow.auction";
+  private final String TOPIC_COLLECT_WOW_AUCTION_COMMODITIES = "collect.wow.auction.commodities";
 
   private final BlizzardApiService blizzardApiService;
   private final KafkaEventProduceService kafkaEventProduceService;
@@ -42,16 +44,40 @@ public class WowDataCollectService {
       throw new RuntimeException(e);
     }
 
-    String eventId = UUID.randomUUID().toString();
+    String transactionId = UUID.randomUUID().toString();
     Long issueTimestamp = new Date().getTime();
-    getAuctionsRes.getAuctions().stream()
+    long eventCount = getAuctionsRes.getAuctions().stream()
         .filter(Objects::nonNull)
         .map(auctionData -> EventMessage.builder()
-            .id(eventId)
+            .transactionId(transactionId)
             .timestamp(issueTimestamp)
-            .version(1L)
             .data(auctionData)
             .build())
-        .forEach(eventMessage -> this.kafkaEventProduceService.sendSimpleMessage(TOPIC_COLLECT_WOW_AUCTION, eventMessage));
+        .peek(eventMessage -> this.kafkaEventProduceService.sendSimpleMessage(TOPIC_COLLECT_WOW_AUCTION, eventMessage))
+        .count();
+    log.info("[publishWowAuctionData] publish wow auction event success, count: {}", eventCount);
+  }
+
+  public void publishWowAuctionCommodities() {
+    GetAuctionsCommoditiesRes getAuctionsCommoditiesRes;
+    try {
+      getAuctionsCommoditiesRes = this.blizzardApiService.getAuctionsCommodities();
+    } catch (IOException | InterruptedException e) {
+      log.error("fail to get Auction Commodities data from blizzard", e);
+      throw new RuntimeException(e);
+    }
+
+    String transactionId = UUID.randomUUID().toString();
+    Long issueTimestamp = new Date().getTime();
+    long eventCount = getAuctionsCommoditiesRes.getAuctions().stream()
+        .filter(Objects::nonNull)
+        .map(auctionCommodities -> EventMessage.builder()
+            .transactionId(transactionId)
+            .timestamp(issueTimestamp)
+            .data(auctionCommodities)
+            .build())
+        .peek(eventMessage -> this.kafkaEventProduceService.sendSimpleMessage(TOPIC_COLLECT_WOW_AUCTION_COMMODITIES, eventMessage))
+        .count();
+    log.info("[publishWowAuctionCommodities] publish wow auction event success, count: {}", eventCount);
   }
 }

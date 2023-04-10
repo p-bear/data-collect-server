@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.pbear'
-version = '1.1.4'
+version = '1.1.5'
 sourceCompatibility = '11'
 
 configurations {
@@ -31,7 +31,6 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.9'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.springframework.batch:spring-batch-test'
 }
 
 tasks.named('test') {

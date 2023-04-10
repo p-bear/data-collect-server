@@ -8,9 +8,8 @@ import lombok.Setter;
 @Setter
 @Builder
 public class EventMessage<T> {
-  private String id;
+  private String transactionId;
   private String issuer;
   private Long timestamp;
-  private Long version;
   private T data;
 }

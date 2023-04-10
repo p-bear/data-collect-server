@@ -12,10 +12,17 @@ import org.springframework.stereotype.Service;
 public class FixedScheduleService {
   private final WowDataCollectService wowDataCollectService;
 
-  @Scheduled(cron = "0 10 * * * ?")
+  @Scheduled(cron = "0 35 1 * * ?")
   public void collectWowAuctionData() {
     log.info("collect wow auctionData start");
     this.wowDataCollectService.publishWowAuctionData();
     log.info("collect wow auctionData end");
+  }
+
+  @Scheduled(cron = "0 10 * * * ?")
+  public void collectWowAuctionCommoditiesData() {
+    log.info("collect wow auctionCommoditiesData start");
+    this.wowDataCollectService.publishWowAuctionCommodities();
+    log.info("collect wow auctionCommoditiesData end");
   }
 }

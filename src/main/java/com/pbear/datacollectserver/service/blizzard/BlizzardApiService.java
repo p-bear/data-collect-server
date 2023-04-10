@@ -3,6 +3,7 @@ package com.pbear.datacollectserver.service.blizzard;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.pbear.datacollectserver.data.blizzard.call.response.GetAuctionsCommoditiesRes;
 import com.pbear.datacollectserver.data.blizzard.call.response.GetAuctionsRes;
 import com.pbear.datacollectserver.data.blizzard.call.response.GetRealmRes;
 import lombok.RequiredArgsConstructor;
@@ -50,6 +51,15 @@ public class BlizzardApiService {
         .GET()
         .build();
     return this.sendRequest(request, GetAuctionsRes.class);
+  }
+
+  public GetAuctionsCommoditiesRes getAuctionsCommodities() throws IOException, InterruptedException {
+    HttpRequest request = HttpRequest.newBuilder()
+        .uri(this.buildApiUri("/data/wow/auctions/commodities", this.buildDefaultParams()))
+        .header("Authorization", this.buildAuthorizationHeader())
+        .GET()
+        .build();
+    return this.sendRequest(request, GetAuctionsCommoditiesRes.class);
   }
 
   public GetRealmRes getRealm(final String realmSlug) throws IOException, InterruptedException {
